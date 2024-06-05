@@ -16,6 +16,7 @@ class HomeViewModel {
     // Publishers
     @Published var items: [ArticleViewModel] = []
     @Published var error: String? = nil
+    @Published var isLoading: Bool = false
 
     var onArticleSelected: ((Article) -> Void)?
 
@@ -24,15 +25,19 @@ class HomeViewModel {
     }
 
     func loadArticles() {
+        isLoading = true
         fetchArticlesUseCase.fetchArticles()
-            .sink(receiveCompletion: { completion in
+            .sink(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                self.isLoading = false
                 switch completion {
                 case .failure(let error):
                     self.error = error.localizedDescription
                 case .finished:
                     break
                 }
-            }, receiveValue: { articles in
+            }, receiveValue: { [weak self] articles in
+                guard let self = self else { return }
                 self.articles = articles
                 self.items = articles.map { ArticleViewModel(article: $0) }
             })

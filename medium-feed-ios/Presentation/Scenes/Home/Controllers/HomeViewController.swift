@@ -13,6 +13,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     private let viewModel: HomeViewModel
     private let tableView = UITableView()
     private var cancellables = Set<AnyCancellable>()
+    private let activityIndicator = UIActivityIndicatorView(style: .gray)
+    private var refreshControl = UIRefreshControl()
 
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -35,21 +37,36 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         self.title = "Medium"
         
         view.addSubview(tableView)
+        view.addSubview(activityIndicator)
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(ArticleCell.self, forCellReuseIdentifier: ArticleCell.reuseIdentifier)
         tableView.estimatedRowHeight = 120
         tableView.rowHeight = 120
+        tableView.refreshControl = refreshControl
+
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-    }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
 
+    }
+    
+    @objc private func refreshData() {
+        viewModel.loadArticles()
+    }
     private func bindViewModel() {
         viewModel.$items
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.tableView.reloadData()
+                self?.refreshControl.endRefreshing()
             }
             .store(in: &cancellables)
 
@@ -58,6 +75,18 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             .sink { [weak self] error in
                 if let error = error {
                     print("Error: \(error)")
+                }
+                self?.refreshControl.endRefreshing()
+            }
+            .store(in: &cancellables)
+
+        viewModel.$isLoading
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                if isLoading {
+                    self?.activityIndicator.startAnimating()
+                } else {
+                    self?.activityIndicator.stopAnimating()
                 }
             }
             .store(in: &cancellables)

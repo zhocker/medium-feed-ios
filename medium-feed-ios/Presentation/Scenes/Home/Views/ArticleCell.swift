@@ -22,7 +22,7 @@ class ArticleCell: UITableViewCell {
     }
 
     private func setupUI() {
-        // Setting up the subviews
+
         articleImageView.contentMode = .scaleAspectFill
         articleImageView.clipsToBounds = true
         articleImageView.layer.cornerRadius = 8
@@ -37,14 +37,11 @@ class ArticleCell: UITableViewCell {
         
         dateLabel.font = UIFont.systemFont(ofSize: 12)
         dateLabel.textColor = .gray
-
-        // Adding subviews
         contentView.addSubview(articleImageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(dateLabel)
         
-        // Layout constraints using SnapKit
         articleImageView.snp.makeConstraints { make in
             make.left.top.equalToSuperview().offset(16)
             make.size.equalTo(CGSize(width: 80, height: 80)) // Set the size of the image view
@@ -67,6 +64,9 @@ class ArticleCell: UITableViewCell {
             make.bottom.equalToSuperview().offset(-4)
             make.height.equalTo(20)
         }
+        
+        self.selectionStyle = .none
+        
     }
 
     // Configure the cell with ViewModel
@@ -83,7 +83,6 @@ class ArticleCell: UITableViewCell {
             return
         }
         
-        // For simplicity, we'll download the image synchronously. You might want to use a library like SDWebImage for asynchronous image loading and caching.
         DispatchQueue.global().async {
             if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
                 DispatchQueue.main.async {
