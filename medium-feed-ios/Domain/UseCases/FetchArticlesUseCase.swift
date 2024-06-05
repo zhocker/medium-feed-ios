@@ -7,6 +7,32 @@
 
 import Foundation
 
+//class FetchArticlesUseCase {
+//    private let repository: ArticleRepository
+//
+//    init(repository: ArticleRepository) {
+//        self.repository = repository
+//    }
+//
+//    func fetchArticles(completion: @escaping ([Article]) -> Void) {
+//        repository.loadLocalArticles { articles in
+//            completion(articles)
+//        }
+//        
+//        repository.fetchArticles { result in
+//            switch result {
+//            case .success(let articles):
+//                self.repository.saveArticles(articles)
+//                completion(articles)
+//            case .failure(let error):
+//                print("Error fetching articles:", error)
+//            }
+//        }
+//    }
+//}
+import Foundation
+import Combine
+
 class FetchArticlesUseCase {
     private let repository: ArticleRepository
 
@@ -14,19 +40,22 @@ class FetchArticlesUseCase {
         self.repository = repository
     }
 
-    func fetchArticles(completion: @escaping ([Article]) -> Void) {
-        repository.loadLocalArticles { articles in
-            completion(articles)
-        }
-        
-        repository.fetchArticles { result in
-            switch result {
-            case .success(let articles):
-                self.repository.saveArticles(articles)
-                completion(articles)
-            case .failure(let error):
-                print("Error fetching articles:", error)
+    func fetchArticles() -> AnyPublisher<[Article], Error> {
+        return Future<[Article], Error> { promise in
+            self.repository.loadLocalArticles { localArticles in
+                promise(.success(localArticles))
+                
+                self.repository.fetchArticles { result in
+                    switch result {
+                    case .success(let articles):
+                        promise(.success(articles))
+                        self.repository.saveArticles(articles)
+                    case .failure(let error):
+                        promise(.failure(error))
+                    }
+                }
             }
         }
+        .eraseToAnyPublisher()
     }
 }

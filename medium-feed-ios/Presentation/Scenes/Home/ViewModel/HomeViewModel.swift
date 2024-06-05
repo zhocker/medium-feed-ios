@@ -6,12 +6,17 @@
 //
 
 import Foundation
+import Combine
 
 class HomeViewModel {
     private let fetchArticlesUseCase: FetchArticlesUseCase
     private var articles: [Article] = []
+    private var cancellables = Set<AnyCancellable>()
     
-    var onArticlesUpdated: (() -> Void)?
+    // Publishers
+    @Published var items: [ArticleViewModel] = []
+    @Published var error: String? = nil
+
     var onArticleSelected: ((Article) -> Void)?
 
     init(fetchArticlesUseCase: FetchArticlesUseCase) {
@@ -19,14 +24,23 @@ class HomeViewModel {
     }
 
     func loadArticles() {
-        fetchArticlesUseCase.fetchArticles { [weak self] articles in
-            self?.articles = articles
-            self?.onArticlesUpdated?()
-        }
+        fetchArticlesUseCase.fetchArticles()
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .failure(let error):
+                    self.error = error.localizedDescription
+                case .finished:
+                    break
+                }
+            }, receiveValue: { articles in
+                self.articles = articles
+                self.items = articles.map { ArticleViewModel(article: $0) }
+            })
+            .store(in: &cancellables)
     }
     
     var numberOfArticles: Int {
-        return articles.count
+        return items.count
     }
 
     func article(at index: Int) -> Article {
@@ -37,4 +51,5 @@ class HomeViewModel {
         let article = articles[index]
         onArticleSelected?(article)
     }
+    
 }

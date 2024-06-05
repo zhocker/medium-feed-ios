@@ -19,7 +19,8 @@ class AppCoordinator: AppCoordinatorProtocol {
     // Dependencies
     private let articleRepository: ArticleRepository
     private let fetchArticlesUseCase: FetchArticlesUseCase
-    
+    private var homeViewController: HomeViewController? = nil
+
     init(window: UIWindow) {
         self.window = window
         self.navigationController = UINavigationController()
@@ -37,15 +38,21 @@ class AppCoordinator: AppCoordinatorProtocol {
     private func showHomeScreen() {
         let viewModel = HomeViewModel(fetchArticlesUseCase: fetchArticlesUseCase)
         viewModel.onArticleSelected = { [weak self] article in
-            self?.showDetailScreen(article: article)
+            guard let self = self, let vc = self.homeViewController, let nav = vc.navigationController else {
+                return
+            }
+            print(article)
+            self.showDetailScreen(article: article, nav: nav)
         }
-        let homeViewController = HomeViewController(viewModel: viewModel)
-        
-        navigationController.setViewControllers([homeViewController], animated: false)
+        self.homeViewController = HomeViewController(viewModel: viewModel)
+        if let homeViewController = self.homeViewController {
+            navigationController.setViewControllers([homeViewController], animated: false)
+        }
     }
     
-    private func showDetailScreen(article: Article) {
+    private func showDetailScreen(article: Article, nav: UINavigationController) {
         let detailViewController = DetailViewController(article: article)
-        navigationController.pushViewController(detailViewController, animated: true)
+        nav.pushViewController(detailViewController, animated: true)
     }
+    
 }

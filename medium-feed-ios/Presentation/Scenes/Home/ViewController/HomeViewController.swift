@@ -5,13 +5,14 @@
 //  Created by User on 4/6/2567 BE.
 //
 
-import Foundation
 import UIKit
+import Combine
 import SnapKit
 
 class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let viewModel: HomeViewModel
     private let tableView = UITableView()
+    private var cancellables = Set<AnyCancellable>()
 
     init(viewModel: HomeViewModel) {
         self.viewModel = viewModel
@@ -21,33 +22,45 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setupUI()
+        setupUI()
+        bindViewModel()
+        viewModel.loadArticles()
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        self.view.backgroundColor = .red
-    }
-    
+
     private func setupUI() {
+        
+        self.title = "Medium"
+        
         view.addSubview(tableView)
-        tableView.backgroundColor = .clear
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(ArticleCell.self, forCellReuseIdentifier: "ArticleCell")
+        tableView.register(ArticleCell.self, forCellReuseIdentifier: ArticleCell.reuseIdentifier)
+        tableView.estimatedRowHeight = 120
+        tableView.rowHeight = 120
         tableView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        
-        viewModel.onArticlesUpdated = { [weak self] in
-            DispatchQueue.main.async {
+    }
+
+    private func bindViewModel() {
+        viewModel.$items
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
                 self?.tableView.reloadData()
             }
-        }
-        viewModel.loadArticles()
+            .store(in: &cancellables)
+
+        viewModel.$error
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                if let error = error {
+                    print("Error: \(error)")
+                }
+            }
+            .store(in: &cancellables)
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -55,14 +68,16 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ArticleCell", for: indexPath) as! ArticleCell
-        let article = viewModel.article(at: indexPath.row)
-        cell.configure(with: article)
+        let cell = tableView.dequeueReusableCell(withIdentifier: ArticleCell.reuseIdentifier, for: indexPath) as! ArticleCell
+        let articleViewModel = viewModel.items[indexPath.row]
+        cell.configure(with: articleViewModel)
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        viewModel.didSelectArticle(at: indexPath.row)
-        UIControl()
+        let article = viewModel.article(at: indexPath.row)
+        let detailViewController = DetailViewController(article: article)
+        self.navigationController?.pushViewController(detailViewController, animated: true)
+
     }
 }
