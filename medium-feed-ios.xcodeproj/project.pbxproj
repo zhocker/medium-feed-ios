@@ -33,6 +33,7 @@
 		CEC865E42C0F6E7E003BD83B /* DateFormatter+Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC865E32C0F6E7E003BD83B /* DateFormatter+Article.swift */; };
 		CEC865E62C105C47003BD83B /* ArticleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC865E52C105C47003BD83B /* ArticleViewModel.swift */; };
 		CEC865EA2C1060C1003BD83B /* DetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC865E92C1060C1003BD83B /* DetailViewModel.swift */; };
+		CEC865EC2C10BC81003BD83B /* ArticleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEC865EB2C10BC81003BD83B /* ArticleService.swift */; };
 		FDD425D5C3BB991480F39A86 /* Pods_medium_feed_ios_medium_feed_iosUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65AD29B82532EEB21D0A2505 /* Pods_medium_feed_ios_medium_feed_iosUITests.framework */; };
 /* End PBXBuildFile section */
 
@@ -89,6 +90,7 @@
 		CEC865E32C0F6E7E003BD83B /* DateFormatter+Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateFormatter+Article.swift"; sourceTree = "<group>"; };
 		CEC865E52C105C47003BD83B /* ArticleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleViewModel.swift; sourceTree = "<group>"; };
 		CEC865E92C1060C1003BD83B /* DetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewModel.swift; sourceTree = "<group>"; };
+		CEC865EB2C10BC81003BD83B /* ArticleService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleService.swift; sourceTree = "<group>"; };
 		EB416E59CEC6EC6A1DB2FB9A /* Pods-medium-feed-iosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-medium-feed-iosTests.debug.xcconfig"; path = "Target Support Files/Pods-medium-feed-iosTests/Pods-medium-feed-iosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F6625178BBB369203CABBEDC /* Pods_medium_feed_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_medium_feed_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -300,6 +302,7 @@
 		CEC865C02C0ED00B003BD83B /* Networking */ = {
 			isa = PBXGroup;
 			children = (
+				CEC865EB2C10BC81003BD83B /* ArticleService.swift */,
 			);
 			path = Networking;
 			sourceTree = "<group>";
@@ -642,6 +645,7 @@
 				CEC865862C0EC6FE003BD83B /* AppDelegate.swift in Sources */,
 				CEC865E42C0F6E7E003BD83B /* DateFormatter+Article.swift in Sources */,
 				CEC865D72C0EECFE003BD83B /* FetchArticlesUseCase.swift in Sources */,
+				CEC865EC2C10BC81003BD83B /* ArticleService.swift in Sources */,
 				CEC865DE2C0F6E1D003BD83B /* RSSParser.swift in Sources */,
 				CEC865CD2C0EEC52003BD83B /* DetailViewController.swift in Sources */,
 				CEC865D52C0EECE2003BD83B /* ArticleRepository.swift in Sources */,

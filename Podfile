@@ -6,6 +6,8 @@ target 'medium-feed-ios' do
   use_frameworks!
   pod 'SnapKit'
   pod 'RealmSwift'
+  pod 'Moya'
+  
   # Pods for medium-feed-ios
 
   target 'medium-feed-iosTests' do

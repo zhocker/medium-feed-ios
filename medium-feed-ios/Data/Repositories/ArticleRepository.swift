@@ -7,6 +7,7 @@
 
 import Foundation
 import RealmSwift
+import Moya
 
 protocol ArticleRepository {
     func fetchArticles(completion: @escaping (Result<[Article], Error>) -> Void)
@@ -15,25 +16,22 @@ protocol ArticleRepository {
 }
 
 class DefaultArticleRepository: ArticleRepository {
+    private let provider = MoyaProvider<ArticleService>()
+
     func fetchArticles(completion: @escaping (Result<[Article], Error>) -> Void) {
-        guard let url = URL(string: "https://medium.com/feed/@primoapp") else {
-            completion(.failure(NSError(domain: "", code: -1, userInfo: nil)))
-            return
-        }
-        
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-            } else if let data = data {
+        provider.request(.fetchArticles) { result in
+            switch result {
+            case .success(let response):
                 do {
-                    let articles = try self.parse(data: data)
+                    let articles = try self.parse(data: response.data)
                     completion(.success(articles))
                 } catch {
                     completion(.failure(error))
                 }
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
-        task.resume()
     }
     
     func saveArticles(_ articles: [Article]) {
