@@ -5,6 +5,7 @@
 //  Created by User on 4/6/2567 BE.
 //
 
+import UIKit
 import Foundation
 import Combine
 
@@ -17,8 +18,6 @@ class HomeViewModel {
     @Published var items: [ArticleViewModel] = []
     @Published var error: String? = nil
     @Published var isLoading: Bool = false
-
-    var onArticleSelected: ((Article) -> Void)?
 
     init(fetchArticlesUseCase: FetchArticlesUseCase) {
         self.fetchArticlesUseCase = fetchArticlesUseCase
@@ -51,10 +50,9 @@ class HomeViewModel {
     func article(at index: Int) -> Article {
         return articles[index]
     }
-    
-    func didSelectArticle(at index: Int) {
-        let article = articles[index]
-        onArticleSelected?(article)
+        
+    func articleModel(at index: Int) -> ArticleViewModel {
+        return items[index]
     }
-    
+        
 }

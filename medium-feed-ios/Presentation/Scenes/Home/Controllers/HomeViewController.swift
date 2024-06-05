@@ -98,14 +98,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ArticleCell.reuseIdentifier, for: indexPath) as! ArticleCell
-        let articleViewModel = viewModel.items[indexPath.row]
-        cell.configure(with: articleViewModel)
+        cell.configure(with: viewModel.articleModel(at: indexPath.row))
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let article = viewModel.article(at: indexPath.row)
-        let detailViewController = DetailViewController(article: article)
+        let detailViewController = DetailViewController(article: viewModel.article(at: indexPath.row))
         self.navigationController?.pushViewController(detailViewController, animated: true)
 
     }

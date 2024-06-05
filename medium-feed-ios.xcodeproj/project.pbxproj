@@ -212,8 +212,8 @@
 		CEC865B62C0ECC3D003BD83B /* Presentation */ = {
 			isa = PBXGroup;
 			children = (
-				CEC865B72C0ECC46003BD83B /* Scenes */,
 				CEC865BA2C0ECD04003BD83B /* Coordinators */,
+				CEC865B72C0ECC46003BD83B /* Scenes */,
 			);
 			path = Presentation;
 			sourceTree = "<group>";
