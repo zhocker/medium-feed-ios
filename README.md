@@ -1,5 +1,6 @@
 # Medium Feed iOS App
 
+(Checkout `main` branch)
 Medium Feed iOS App fetches and displays articles from Medium using Moya for networking, Realm for local storage, SnapKit for UI layout, and follows the MVVM design pattern.
 
 ## Features
