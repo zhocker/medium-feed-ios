@@ -33,28 +33,41 @@ class DefaultArticleRepository: ArticleRepository {
             }
         }
     }
-    
+
     func saveArticles(_ articles: [Article]) {
-        DispatchQueue(label: "realm.save.queue").async {
+        let queue = DispatchQueue(label: "realm.save.queue", qos: .background)
+        queue.async {
             autoreleasepool {
-                let realm = try! Realm()
-                try! realm.write {
-                    let realmArticles = articles.map { RealmArticle.from(article: $0) }
-                    realm.add(realmArticles, update: .modified)
+                do {
+                    let realm = try Realm()
+                    try realm.write {
+                        let realmArticles = articles.map { RealmArticle.from(article: $0) }
+                        realm.add(realmArticles, update: .modified)
+                    }
+                } catch {
+                    print("Error saving articles to Realm: \(error.localizedDescription)")
                 }
             }
         }
     }
-    
+
     func loadLocalArticles(completion: @escaping ([Article]) -> Void) {
-        DispatchQueue(label: "realm.load.queue").async {
+        let queue = DispatchQueue(label: "realm.load.queue", qos: .background)
+        queue.async {
             autoreleasepool {
-                let realm = try! Realm()
-                let realmArticles = realm.objects(RealmArticle.self)
-                let articles: [Article] = realmArticles.map { $0.toDomain() }
-                
-                DispatchQueue.main.async {
-                    completion(articles)
+                do {
+                    let realm = try Realm()
+                    let realmArticles = realm.objects(RealmArticle.self)
+                    let articles: [Article] = realmArticles.map { $0.toDomain() }
+
+                    DispatchQueue.main.async {
+                        completion(articles)
+                    }
+                } catch {
+                    DispatchQueue.main.async {
+                        print("Error loading articles from Realm: \(error.localizedDescription)")
+                        completion([])
+                    }
                 }
             }
         }
